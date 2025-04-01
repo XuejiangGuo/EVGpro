@@ -13,12 +13,6 @@ x = data.iloc[:, 2:]
 # label
 y = data['Type'].map({'AZS_C1': 0, 'AZS_C2': 1})  
 
-# the function for plot ROC
-def plotROC(y_true, y_prob, name):
-    fpr, tpr, thresholds = roc_curve(y_true, y_prob)
-    roc_auc = auc(fpr, tpr)
-    plt.plot(fpr, tpr, label='{} (AUC = {})'.format(name, round(roc_auc, 3)))
-
 # load RandomForest model
 clf = RandomForestClassifier(n_jobs=-1, class_weight="balanced")
 
@@ -27,6 +21,12 @@ cv = StratifiedKFold(5)
 selector = RFECV(clf, step=1, cv=cv, n_jobs=-1,scoring='roc_auc')
 selector = selector.fit(x, y)
 select_features = selector.get_feature_names_out()
+
+# the function for plot ROC
+def plotROC(y_true, y_prob, name):
+    fpr, tpr, thresholds = roc_curve(y_true, y_prob)
+    roc_auc = auc(fpr, tpr)
+    plt.plot(fpr, tpr, label='{} (AUC = {})'.format(name, round(roc_auc, 3)))
 
 # plot ROC for each importance features
 plt.rcParams['font.sans-serif'] = 'Arial'
